@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Générateur d'Étiquettes de Prix</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* General styles */
+      .label {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+        padding: 10px;
+        background: white;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+      }
+      .product-name {
+        background-color: black;
+        color: white;
+        padding: 10px;
+        font-size: 1.25rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .price {
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-align: right;
+      }
+      .details {
+        font-size: 0.875rem;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      /* Print-specific styles */
+      @media print {
+        body * {
+          visibility: hidden; /* Hide all content by default when printing */
+        }
+        #labelsContainer,
+        #labelsContainer * {
+          visibility: visible; /* Ensure labels are visible */
+        }
+        #labelsContainer {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+        }
+        .label,
+        .product-name,
+        .price,
+        .details {
+          box-shadow: none !important;
+          color: black !important; /* Ensure text is black, overriding Tailwind CSS */
+          background: transparent !important; /* Ensure no background for clearer print output */
+        }
+        .product-name {
+          background-color: black !important; /* Force background color for product name */
+          color: white !important; /* Ensure text color is white */
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">
+          Ajouter une Étiquette de Prix
+        </h2>
+        <form id="priceForm" class="space-y-4">
+          <input
+            type="text"
+            id="productName"
+            placeholder="Nom du Produit"
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            required
+          />
+          <div class="flex space-x-4">
+            <input
+              type="number"
+              id="volume"
+              placeholder="Volume ou Poids"
+              class="mt-1 block w-1/2 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+              step="0.01"
+              required
+            />
+            <select
+              id="unit"
+              class="block w-1/4 mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            >
+              <option value="Litre">Litre</option>
+              <option value="Kg">Kg</option>
+            </select>
+            <input
+              type="number"
+              id="totalPrice"
+              placeholder="Prix Total (€)"
+              class="mt-1 block w-1/4 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+              step="0.01"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="mt-4 w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            Ajouter Étiquette
+          </button>
+        </form>
+        <p id="remainingLabels" class="mt-4 text-sm text-gray-500">
+          Étiquettes restantes : 16
+        </p>
+        <div id="labelsContainer" class="mt-4"></div>
+        <button
+          onclick="window.print()"
+          class="mt-4 w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+        >
+          Imprimer les étiquettes
+        </button>
+      </div>
+    </div>
+    <script>
+      const maxLabels = 16;
+      let remainingLabels = maxLabels;
+      document.getElementById(
+        "remainingLabels"
+      ).innerText = `Étiquettes restantes : ${remainingLabels}`;
+
+      document
+        .getElementById("priceForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          if (remainingLabels > 0) {
+            const productName = document
+              .getElementById("productName")
+              .value.toUpperCase();
+            const volume = parseFloat(document.getElementById("volume").value);
+            const totalPrice = parseFloat(
+              document.getElementById("totalPrice").value
+            );
+            const unit = document.getElementById("unit").value;
+            const pricePerUnit = totalPrice / volume;
+            const date = new Date().toLocaleDateString("fr-FR");
+
+            const labelsContainer = document.getElementById("labelsContainer");
+            const label = document.createElement("div");
+            label.className = "label";
+            label.innerHTML = `<div class="product-name">${productName}</div>
+                                   <div class="details">
+                                       <div>${volume.toFixed(
+                                         2
+                                       )} ${unit}, Prix par ${unit}: €${pricePerUnit.toFixed(
+              2
+            )}</div>
+                                       <div class="price">€${totalPrice.toFixed(
+                                         2
+                                       )}</div>
+                                   </div>
+                                   <div>Date: ${date}</div>`;
+            labelsContainer.appendChild(label);
+
+            remainingLabels--;
+            document.getElementById(
+              "remainingLabels"
+            ).innerText = `Étiquettes restantes : ${remainingLabels}`;
+          } else {
+            alert("La feuille est pleine !");
+          }
+        });
+    </script>
+  </body>
+</html>

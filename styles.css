@@ -1,0 +1,77 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  width: 21cm; /* Largeur d'une feuille A4 */
+}
+
+.labels-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.label {
+  border: 2px solid green;
+  padding: 5px;
+  background-color: white;
+  font-size: 12px;
+  width: 250px;
+  margin-bottom: 5px;
+}
+
+.label-top,
+.label-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-info {
+  flex: 3;
+}
+
+.price-info {
+  flex: 1;
+  text-align: right;
+  font-size: 16px; /* Taille plus grande pour le prix */
+}
+
+.barcode {
+  height: 20px;
+  background-image: url("barcode-pattern.png");
+  background-size: cover;
+  margin: 5px 0;
+}
+
+.additional-info {
+  flex: 1;
+}
+
+.code,
+.volume,
+.date {
+  flex: 1;
+  text-align: right;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .labels-container,
+  .labels-container * {
+    visibility: visible;
+  }
+  .labels-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  button {
+    display: none;
+  }
+}
