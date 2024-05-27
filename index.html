@@ -20,6 +20,8 @@
         flex-direction: column;
         font-size: 0.875rem;
         line-height: 1.25rem;
+        width: 250px;
+        border: 1px solid transparent; /* Default border for visual consistency */
       }
       .product-name {
         background-color: black;
@@ -56,15 +58,13 @@
           top: 0;
           width: 100%;
         }
-        .label,
-        .product-name,
-        .price,
-        .details {
+        .label {
           box-shadow: none !important;
           color: black !important; /* Ensure text is black, overriding Tailwind CSS */
           background: transparent !important; /* Ensure no background for clearer print output */
+          border: 1px solid black !important; /* Add border for printing */
         }
-        .product-name {
+        .label .product-name {
           background-color: black !important; /* Force background color for product name */
           color: white !important; /* Ensure text color is white */
         }
